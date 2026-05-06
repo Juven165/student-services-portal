@@ -1,0 +1,147 @@
+{% extends 'main/base_staff.html' %}
+
+{% block title %}Application View{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-3">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            Application for:
+            <span class="text-primary">{{ document.title }}</span>
+        </h2>
+
+        <a href="{% url 'staff_dashboard' %}" class="btn btn-danger">
+            Back to Dashboard
+        </a>
+    </div>
+
+
+    <!-- Search and Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row g-2">
+
+                    <div class="col-md-4">
+                        <input type="text"
+                               name="search"
+                               value="{{ request.GET.search }}"
+                               class="form-control"
+                               placeholder="Search applicant or email">
+                    </div>
+
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="Pending" {% if request.GET.status == "Pending" %}selected{% endif %}>Pending</option>
+                            <option value="Approved" {% if request.GET.status == "Approved" %}selected{% endif %}>Approved</option>
+                            <option value="Rejected" {% if request.GET.status == "Rejected" %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <input type="date"
+                               name="date"
+                               value="{{ request.GET.date }}"
+                               class="form-control">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Filter
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- Applications Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="table-primary">
+                    <tr>
+                        <th>Fullname</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Date Applied</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for doc in applications %}
+                <tr>
+
+                    <td>{{ doc.applicant.profile.full_name }}</td>
+
+                    <td>{{ doc.applicant.username }}</td>
+
+                    <td>{{ doc.email }}</td>
+
+                    <td style="width:180px;">
+
+                        <span class="badge
+                        {% if doc.status == 'Pending' %}bg-warning text-dark
+                        {% elif doc.status == 'Approved' %}bg-success
+                        {% elif doc.status == 'Rejected' %}bg-danger
+                        {% endif %}
+                        mb-2">
+                            {{ doc.status }}
+                        </span>
+
+                        <form method="POST" action="{% url 'update_application_status' doc.id %}">
+                        {% csrf_token %}
+
+                            <select name="status"
+                                    class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+
+                                <option value="Pending" {% if doc.status == "Pending" %}selected{% endif %}>Pending</option>
+                                <option value="Approved" {% if doc.status == "Approved" %}selected{% endif %}>Approved</option>
+                                <option value="Rejected" {% if doc.status == "Rejected" %}selected{% endif %}>Rejected</option>
+
+                            </select>
+
+                        </form>
+
+                    </td>
+
+                    <td>
+                        {{ doc.requested_at|date:"M d, Y g:i A" }}
+                    </td>
+
+                </tr>
+                {% empty %}
+
+                <tr>
+                    <td colspan="5" class="text-center p-4 text-muted">
+                        No applications found
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

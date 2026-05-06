@@ -1,0 +1,72 @@
+{% extends 'main/base_student.html' %}
+
+{% block title %}Document Applications{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold">
+            📄 Applications for:
+            <span class="text-primary">{{ document.title }}</span>
+        </h2>
+        <hr>
+    </div>
+
+    {% if applications %}
+        <div class="row">
+            {% for app in applications %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+
+                        <!-- Applicant -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 fw-semibold">
+                                👤 {{ app.applicant.username }}
+                            </h5>
+
+                            <!-- Status Badge -->
+                            {% if app.status == "Approved" %}
+                                <span class="badge bg-success px-3 py-2">Approved</span>
+                            {% elif app.status == "Pending" %}
+                                <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+                            {% else %}
+                                <span class="badge bg-danger px-3 py-2">Rejected</span>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <p class="mb-2">
+                            <strong>📅 Applied on:</strong><br>
+                            {{ app.requested_at|date:"M d, Y H:i" }}
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>📝 Message:</strong><br>
+                            {{ app.message }}
+                        </p>
+
+                        {% if app.letter %}
+                        <a href="{{ app.letter.url }}" target="_blank"
+                           class="btn btn-outline-primary btn-sm mt-2">
+                            📎 View Cover Letter
+                        </a>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No applications yet for this document.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "main/base_student.html" %}
+
+{% block title %}My Documents{% endblock %}
+
+{% block content %}
+
+<style>
+    .page-title {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .document-card {
+        background: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #e3e6f0;
+        transition: 0.2s ease-in-out;
+    }
+
+    .document-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .document-meta {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .badge {
+        font-size: 13px;
+        padding: 8px 14px;
+        border-radius: 20px;
+    }
+
+    .empty-box {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 10px;
+        border: 1px solid #e3e6f0;
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-5">
+
+    <h2 class="page-title mb-4">My Document Requests</h2>
+
+    {% if applications %}
+        <div class="row">
+            {% for app in applications %}
+                <div class="col-12 mb-4">
+                    <div class="p-4 document-card d-flex justify-content-between align-items-start">
+
+                        <!-- LEFT CONTENT -->
+                        <div>
+                            <h5 class="mb-2">{{ app.document.title }}</h5>
+
+                            <p class="document-meta mb-1">
+                                <strong>Requested on:</strong>
+                                {{ app.requested_at|date:"M d, Y • H:i" }}
+                            </p>
+
+                            <p class="document-meta mb-0">
+                                <strong>Message:</strong>
+                                {{ app.message|truncatechars:120 }}
+                            </p>
+
+                            {% if app.letter %}
+                                <p>
+                                    <a href="{{ app.letter.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        View Cover Letter
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- STATUS BADGE -->
+                        <div>
+                            {% if app.status == "Approved" %}
+                                <span class="badge bg-success">
+                                    ✔ Approved
+                                </span>
+                            {% elif app.status == "Rejected" %}
+                                <span class="badge bg-danger">
+                                    ✖ Rejected
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    ⏳ Pending
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-box">
+            <h5 class="text-muted">No document requests yet</h5>
+            <p class="text-secondary mb-0">
+                You haven’t requested any documents from the system.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

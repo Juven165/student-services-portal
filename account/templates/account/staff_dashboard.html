@@ -1,0 +1,288 @@
+{% extends 'main/base_staff.html' %}
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<style>
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* HERO */
+
+.hero-card {
+    background: linear-gradient(135deg,#4f7cff,#6ea8ff);
+    color: white;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* QUICK ACTIONS */
+
+.quick-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    transition: .25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.quick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+
+/* STAT CARDS */
+
+.stat-card {
+    border-radius: 16px;
+    padding: 22px;
+    color: white;
+    transition: .25s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* APPLICATION ITEM */
+
+.app-item {
+    border-radius: 12px;
+    transition: .2s;
+}
+
+.app-item:hover {
+    background: #f8f9fc;
+    transform: translateX(4px);
+}
+
+/* TIMELINE */
+
+.timeline {
+    border-left: 3px solid #0d6efd;
+    padding-left: 20px;
+    margin-left: 10px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -28px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #0d6efd;
+}
+
+</style>
+
+<div class="dashboard-container">
+
+    <!-- HERO -->
+    <div class="hero-card mb-4">
+        <h3 class="fw-bold mb-1">Welcome back {{ user.username }} 👋</h3>
+        <p class="mb-0 opacity-75">Manage documents and student applications.</p>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none text-dark">
+                <div class="quick-card">
+                    <i class="bi bi-pen fs-3 text-primary"></i>
+                    <div class="fw-semibold mt-2">Compose</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none text-dark">
+                <div class="quick-card">
+                    <i class="bi bi-send fs-3 text-primary"></i>
+                    <div class="fw-semibold mt-2">Sent</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="#" class="text-decoration-none text-dark">
+                <div class="quick-card">
+                    <i class="bi bi-inbox fs-3 text-primary"></i>
+                    <div class="fw-semibold mt-2">Inbox</div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm" style="background:#4f7cff;">
+                <i class="bi bi-journal-bookmark fs-3"></i>
+                <div class="mt-2">Documents Posted</div>
+                <h3>{{ total_documents|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm" style="background:#3bb273;">
+                <i class="bi bi-people fs-3"></i>
+                <div class="mt-2">Applications</div>
+                <h3>{{ total_applications|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm" style="background:#d4a017;">
+                <i class="bi bi-hourglass-split fs-3"></i>
+                <div class="mt-2">Pending</div>
+                <h3>{{ pending_count|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm" style="background:#0dc5f0;">
+                <i class="bi bi-check2-circle fs-3"></i>
+                <div class="mt-2">Approved</div>
+                <h3>{{ approved_count|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card shadow-sm" style="background:#dc3545;">
+                <i class="bi bi-person-x fs-3"></i>
+                <div class="mt-2">Rejected</div>
+                <h3>{{ rejected_count|default:0 }}</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h5 class="fw-bold mb-3">Applications Overview</h5>
+        <canvas id="applicationsChart"></canvas>
+    </div>
+
+    <!-- RECENT APPLICATIONS -->
+    <h5 class="fw-bold mb-3">Recent Applications</h5>
+
+    <div class="list-group shadow-sm">
+
+        {% for app in recent_applications %}
+
+        <div class="list-group-item app-item d-flex justify-content-between">
+
+            <div>
+                <strong>{{ app.applicant.profile.full_name }}</strong>
+                <div class="small text-muted">{{ app.email }}</div>
+                <div class="small text-muted"><em>{{ app.document.title }}</em></div>
+            </div>
+
+            <div class="text-end">
+
+                {% if app.status|lower == "approved" %}
+                    <span class="badge bg-success">Approved</span>
+
+                {% elif app.status|lower == "pending" %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+
+                {% elif app.status|lower == "rejected" %}
+                    <span class="badge bg-danger">Rejected</span>
+
+                {% else %}
+                    <span class="badge bg-secondary">{{ app.status|title }}</span>
+                {% endif %}
+
+                <br>
+                <small class="text-muted">{{ app.requested_at|date:"M d, Y H:i" }}</small>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="list-group-item text-center text-muted">
+            No recent applications
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- ACTIVITY -->
+    <h5 class="fw-bold mt-5 mb-3">Activity Feed</h5>
+
+    <div class="timeline">
+
+        {% for act in activity_feed %}
+
+        <div class="timeline-item">
+
+            {% if act.type == "document" %}
+
+                <strong>📘 Document Posted:</strong> {{ act.title }}<br>
+                <small class="text-muted">{{ act.date|date:"M d, Y H:i" }}</small>
+
+            {% else %}
+
+                <strong>📩 Application:</strong> {{ act.applicant }} applied to <em>{{ act.title }}</em><br>
+                <small class="text-muted">{{ act.date|date:"M d, Y H:i" }}</small>
+
+            {% endif %}
+
+        </div>
+
+        {% empty %}
+
+        <p class="text-muted">No activity yet</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+new Chart(document.getElementById('applicationsChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending','Approved','Rejected'],
+        datasets: [{
+            data: [
+                {{ pending_count|default:0 }},
+                {{ approved_count|default:0 }},
+                {{ rejected_count|default:0 }}
+            ],
+            backgroundColor: ['#ffc107','#0dc5f0','#dc3545']
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

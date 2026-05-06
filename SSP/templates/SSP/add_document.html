@@ -1,0 +1,97 @@
+{% extends "main/base_student.html" %}
+
+{% block title %}Requesting for {{ document.title }}{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .request-wrapper {
+        max-width: 750px;
+        margin: 50px auto;
+    }
+
+    .request-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-top: 5px solid #1e3a8a;
+    }
+
+    .request-title {
+        font-weight: 600;
+        color: #1e3a8a;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 14px;
+    }
+
+    .form-control:focus {
+        border-color: #1e3a8a;
+        box-shadow: 0 0 0 0.2rem rgba(30,58,138,0.15);
+    }
+
+    .btn-submit {
+        background: #1e3a8a;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .btn-submit:hover {
+        background: #162c66;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="request-wrapper">
+    <div class="request-card">
+        <h3 class="request-title">
+            Request for: {{ document.title }}
+        </h3>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="full_name" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Upload Supporting Letter</label>
+                <input type="file" name="letter" class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Additional Message (Optional)</label>
+                <textarea name="message" rows="4" class="form-control" placeholder="Type your message here..."></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-submit">
+                    Submit Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

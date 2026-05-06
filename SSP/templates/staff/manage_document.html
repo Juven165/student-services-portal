@@ -1,0 +1,50 @@
+{% extends 'main/base_staff.html' %}
+{% block content %}
+<style>
+.table-primary-custom {
+    background-color: #1e3a8a; /* same blue ng navbar mo */
+    color: white;
+}
+
+.table-primary-custom th {
+    background-color: #1e3a8a;
+    color: white;
+    border-color: #1e3a8a;
+}
+</style>
+<h1 class="container mt-1">Manage Applications</h1>
+<div class="d-flex justify-content-between align-item-center">
+    <table class="table table-hover shadow-sm">
+        <thead class="table-primary-custom">
+            <tr>
+                <th>Document Title</th>
+                <th>Applications</th>
+                <th>Posted At</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents%}
+            <tr>
+                <td>{{ document.title }}</td>
+                <td>{{ document.document_applications.count}}</td>
+                <td>{{ document.created_at|date:"M d, Y" }}</td>
+                <td>
+                    {% if document.is_active%}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'view_application' document.id %}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-file-earmark-text"></i>Applications</i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

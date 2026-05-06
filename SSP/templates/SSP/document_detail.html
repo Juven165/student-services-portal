@@ -1,0 +1,43 @@
+{% extends 'main/base_student.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+
+        <!-- Image Preview -->
+        {% if document.image %}
+            <div class="text-center mb-3">
+                <img src="{{ document.image.url }}"
+                     class="img-fluid rounded shadow"
+                     style="max-height: 350px;">
+            </div>
+        {% else %}
+            <p class="text-muted text-center">No image uploaded.</p>
+        {% endif %}
+
+        <!-- Title & Description -->
+        <h2 class="text-primary text-center">{{ document.title }}</h2>
+        <p class="text-center mx-auto" style="max-width: 600px;">
+            {{ document.description }}
+        </p>
+    </div>
+
+    <hr>
+
+    <div class="d-flex gap-2 mt-3">
+        {% if is_saved %}
+            <a href="{% url 'unsave_document' document.id %}" class="btn btn-danger">
+                <i class="bi bi-heartbreak"></i> Unsave
+            </a>
+        {% else %}
+            <a href="{% url 'save_document' document.id %}" class="btn btn-outline-primary">
+                <i class="bi bi-heart"></i> Save
+            </a>
+        {% endif %}
+
+        <a href="{% url 'request_document' document.id %}" class="btn btn-success">
+            📄 Request Now
+        </a>
+    </div>
+</div>
+{% endblock %}

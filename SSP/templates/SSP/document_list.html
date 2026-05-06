@@ -1,0 +1,176 @@
+{% extends 'main/base_student.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    /* Header */
+    .page-header {
+        background: linear-gradient(135deg, #0d6efd, #1e3a8a);
+        padding: 40px;
+        border-radius: 16px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(13,110,253,0.2);
+    }
+
+    .page-header h2 {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .page-header p {
+        opacity: 0.9;
+    }
+
+    /* Search Section */
+    .search-section {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px 15px;
+        border: 1px solid #dee2e6;
+        transition: 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13,110,253,.15);
+    }
+
+    .btn-primary {
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    /* Document Cards */
+    .doc-card {
+        background: #ffffff;
+        border-radius: 18px;
+        transition: 0.25s ease;
+        border: none;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .doc-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body h5 {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .card-body p {
+        min-height: 50px;
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: none;
+        padding-bottom: 20px;
+    }
+
+    .btn-outline-primary {
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-success {
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: #ffffff;
+        padding: 50px;
+        border-radius: 16px;
+        box-shaadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+</style>
+
+
+<div class="container mt-1">
+
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <h2>Available Documents</h2>
+        <p class="text-muted mb-0">
+            Browse and request official documents from the system.
+        </p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section mb-5">
+        <form method="get" class="row justify-content-center g-2">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control"
+                       placeholder="🔍 Search document title..."
+                       value="{{ request.GET.q }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Document Cards -->
+    <div class="row">
+        {% for document in documents %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card doc-card h-100">
+
+                {% if document.image %}
+                    <img src="{{ document.image.url }}" class="card-img-top">
+                {% else %}
+                    <img src="{% static 'img/default-doc.png' %}" class="card-img-top">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5>{{ document.title }}</h5>
+                    <p class="text-muted small">
+                        {{ document.description|truncatewords:20 }}
+                    </p>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{% url 'document_detail' document.id %}" class="btn btn-outline-primary btn-sm">
+                        Details
+                    </a><a href="{% url 'document_applications_detail' document.id %}" class="btn btn-outline-info btn-sm">
+                        Application
+                    </a>
+                    <a href="{% url 'request_document' document.id %}" class="btn btn-outline-success btn-sm">
+                        Request
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="empty-state text-center">
+                <h5 class="text-muted">No documents available</h5>
+                <p class="text-secondary small mb-0">
+                    There are currently no documents matching your search.
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "main/base_student.html" %}
+{% block content %}
+
+
+<style>
+.save-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 18px;
+    transition: all 0.25s ease;
+}
+
+.save-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.img-wrap {
+    height: 180px;
+    overflow: hidden;
+}
+
+.img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.save-badge {
+    position: absolute;
+    top: 12px;
+    left: -35px;
+    background: linear-gradient(135deg, #4f46e5, #22c55e);
+    color: #fff;
+    padding: 6px 45px;
+    transform: rotate(-45deg);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-view {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    border: none;
+}
+
+.btn-view:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+}
+
+.btn-remove {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff;
+    border: none;
+}
+
+.btn-remove:hover {
+    background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+    color: #fff;
+}
+</style>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">💾 Your Saved Documents</h3>
+        <span class="badge bg-primary px-3 py-2">{{ saved|length }} Saved</span>
+    </div>
+
+    {% if saved %}
+    <div class="row g-4">
+        {% for item in saved %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card save-card h-100 border-0 position-relative overflow-hidden">
+
+                <!-- Ribbon -->
+                <span class="save-badge">Saved</span>
+
+                {% if item.document.image %}
+                <div class="img-wrap">
+                    <img src="{{ item.document.image.url }}" alt="">
+                </div>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="fw-semibold mb-1 text-truncate" title="{{ item.document.title }}">
+                        {{ item.document.title }}
+                    </h5>
+
+                    <small class="text-muted mb-3">
+                        📅 {{ item.saved_at|date:"M d, Y" }}
+                    </small>
+
+                    <div class="mt-auto d-grid gap-2">
+                        <a href="{% url 'document_detail' item.document.id %}"
+                           class="btn btn-view">
+                            👁 View
+                        </a>
+
+                        <a href="{% url 'unsave_document' item.document.id %}"
+                           class="btn btn-remove">
+                            ✖ Remove
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="text-center text-muted py-5">
+            <h5>No saved documents yet 😅</h5>
+            <a href="{% url 'document_list' %}" class="btn btn-primary mt-3">
+                Browse Documents
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

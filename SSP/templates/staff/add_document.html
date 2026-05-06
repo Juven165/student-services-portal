@@ -1,0 +1,102 @@
+{% extends "main/base_staff.html" %}
+{% load static %}
+
+{% block title %}Add Document{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <div class="card shadow-lg border-0">
+
+                <!-- Header -->
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">
+                        📄 Add New Document
+                    </h4>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Title -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Document Title
+                            </label>
+                            {{ form.title }}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Description
+                            </label>
+                            {{ form.description }}
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Upload Image
+                            </label>
+                            {{ form.image }}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+
+                            <a href="{% url 'staff_dashboard' %}"
+                               class="btn btn-outline-secondary px-4">
+                                ⬅ Back
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success px-4 shadow-sm">
+                                ✅ Create Document
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<style>
+
+/* Improve input fields */
+input, textarea {
+    border-radius: 8px !important;
+}
+
+/* Focus effect */
+input:focus, textarea:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+
+/* Make textarea nicer */
+textarea {
+    min-height: 150px;
+}
+
+/* Image upload spacing */
+input[type="file"]{
+    padding:6px;
+}
+
+</style>
+
+{% endblock %}
