@@ -3,52 +3,86 @@
 ## 📌 Overview
 A Django-based Learning Management System designed for managing students, teachers, courses, and enrollments.
 
-## 🚀 Features
-### 🔹 **Student**
+---
+
+# 🚀 Features
+
+## 🔹 Student
 - Register & Login
-- Enroll Course
-- Leave a Review
-- Watch Promo
-- View Details
-- Inbox Message
-- Message Admin/Teacher
-- Sent
-- View Course Enrolled
+- Enroll in Courses
+- Leave Reviews
+- Watch Promo Videos
+- View Course Details
+- Inbox Messaging System
+- Message Admin/Teachers
+- Sent Messages
+- View Enrolled Courses
+- Save Courses / Wishlist
 - View About Page
-- Complete Course Lesson and Get Certificate Instantly
-- View Application Every Course
-- Create and UpdateProfile
-- View Student Dashboard Monitor Courses Enrolled, Saved Courses, Recommendations card. View Recent Activity and Recommended Courses
-- Notificatons and Update in Mark as Read
-
-### 🔹 **Staff**
-- Register & Login
-- Create Course
-- Add Lesson
-- Manage Applicantion
-- Manage Review
-- Reply Review
+- Complete Lessons and Generate Certificates Instantly
+- Track Course Applications
 - Create & Update Profile
-- Monitor Approved, Pending, and Reject Application
-- Saved and Unsaved Course
-- View Saved Course/My Wishlist
+- Student Dashboard with:
+  - Enrolled Courses
+  - Saved Courses
+  - Recommended Courses
+  - Recent Activity
+- Notifications with Mark as Read
 
-### 🔹 **Admin**
-- View Dashboard Stats Card with Total Users, Teacher, Students, Courses, Applications. Pichart Student and Teacher Comparison. Bar Chart Top Teachers (Course Posted)
+---
 
+## 🔹 Staff / Teacher
+- Register & Login
+- Create Courses
+- Add Lessons
+- Manage Applications
+- Manage & Reply to Reviews
+- Create & Update Profile
+- Monitor:
+  - Approved Applications
+  - Pending Applications
+  - Rejected Applications
+- Save & Unsave Courses
+- Wishlist / Saved Courses
+- Compose Messages
+- Inbox & Sent Messages
 
+---
 
-## 🛠️ Tech Stack
+## 🔹 Admin
+- Dashboard Statistics:
+  - Total Users
+  - Teachers
+  - Students
+  - Courses
+  - Applications
+- Pie Chart (Student vs Teacher)
+- Bar Chart (Top Teachers by Courses Posted)
+- Line Charts:
+  - Applications over 7 Days
+  - 30 Days
+  - All Time
+- Recent Applicants
+- Recent Teachers
+- User Management
+- Teacher Management
+- Course Management
+- Application Management
+- Messaging System
+
+---
+
+# 🛠️ Tech Stack
 - Python
 - Django
 - Bootstrap
 - SQLite
 
+---
 ## 📸 Screenshots
 
 
-
-## ⚙️ Installation
+# ⚙️ Installation
 
 ```bash
 git clone https://github.com/juvpin143/learning-management-system.git
