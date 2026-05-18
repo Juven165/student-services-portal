@@ -39,5 +39,121 @@
             📄 Request Now
         </a>
     </div>
+
+    <hr class="my-4">
+
+    <h4>⭐ Reviews</h4>
+
+    {% if user.is_authenticated %}
+
+        {% if existing_review %}
+            <div class="alert alert-info">
+                You already reviewed this document.
+            </div>
+        {% else %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="fw-bold">Your Rating</label>
+
+                    <div class="rating-stars fs-3 text-warning">
+                        <i class="bi bi-star star" data-value="1"></i>
+                        <i class="bi bi-star star" data-value="2"></i>
+                        <i class="bi bi-star star" data-value="3"></i>
+                        <i class="bi bi-star star" data-value="4"></i>
+                        <i class="bi bi-star star" data-value="5"></i>
+                    </div>
+
+                    <small class="text-muted d-block">
+                        Click a star to rate
+                    </small>
+
+                    <!-- hidden input -->
+                    <input type="hidden" name="rating" id="rating-value">
+                </div>
+
+                <div class="mb-3">
+                    <label>Message</label>
+                    {{ form.message }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Submit Review
+                </button>
+            </form>
+
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-warning">
+            Login first to submit review.
+        </div>
+    {% endif %}
+
+    <hr>
+
+    {% for review in reviews %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+                    <strong>{{ review.user.username }}</strong>
+
+                    <small class="text-muted">
+                        {{ review.created_at|date:"M d, Y" }}
+                    </small>
+                </div>
+
+                <div class="text-warning mb-2">
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= review.rating %}
+                            ⭐
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <p>{{ review.message }}</p>
+
+                {% if review.reply %}
+                    <div class="alert alert-light border">
+                        <strong>Reply:</strong>
+                        {{ review.reply }}
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
 </div>
+
+<script>
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach((star, index) => {
+
+        star.addEventListener('click', () => {
+            let rating = index + 1;
+            ratingInput.value = rating;
+
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.classList.remove('bi-star');
+                    s.classList.add('bi-star-fill');
+                } else {
+                    s.classList.remove('bi-star-fill');
+                    s.classList.add('bi-star');
+                }
+            });
+        });
+
+    });
+</script>
+
 {% endblock %}

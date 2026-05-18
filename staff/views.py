@@ -1,13 +1,15 @@
 from django.db.models import Q
-from django.urls import reverse_lazy
+from django.http import HttpResponseForbidden
+from django.contrib import messages
 from django.utils.dateparse import parse_date
-from django.views.generic import ListView, TemplateView, CreateView
+from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from SSP.models import DocumentType, DocumentApplication
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DocumentForm
 from django.views import View
+from SSP.models import Review
 
 class StaffDashboard(LoginRequiredMixin, TemplateView):
     template_name = 'account/staff_dashboard.html'
@@ -136,3 +138,113 @@ class UpdateApplicationStatus(LoginRequiredMixin, View):
             application.save()
 
         return redirect(request.META.get("HTTP_REFERER"))
+
+@login_required
+def manage_review(request):
+    user = request.user
+
+    # 1. If SUPERUSER → see all reviews
+    if user.is_superuser:
+        reviews = Review.objects.select_related("document", "user") \
+                                .order_by("-created_at")
+
+    # 2. If STAFF → see reviews only on documents THEY created
+    elif user.is_staff_user():
+        reviews = Review.objects.select_related("document", "user") \
+                                .filter(document__created_by=user) \
+                                .order_by("-created_at")
+
+    # 3. Everyone else → Not authorized
+    else:
+        return HttpResponseForbidden("Not authorized")
+
+    return render(request, "staff/manage_review.html", {"reviews": reviews})
+
+@login_required
+def reply_review(request, review_id):
+
+    if request.method != "POST":
+        return HttpResponseForbidden("Invalid request")
+
+    review = get_object_or_404(Review, pk=review_id)
+    user = request.user
+
+    if not (
+        user.is_superuser or
+        (
+            user.is_staff_user() and
+            review.document.created_by == user
+        )
+    ):
+        return HttpResponseForbidden("Not authorized")
+
+    reply = request.POST.get("reply")
+
+    if reply:
+        review.reply = reply
+        review.replied_by = user
+        review.save()
+
+        messages.success(request, "Reply sent successfully")
+
+    return redirect("manage_review")
+
+@login_required
+def delete_review(request, review_id):
+    if request.method == "POST":
+        return HttpResponseForbidden()
+
+    review = get_object_or_404(Review, id=review_id)
+    user = request.user
+
+    if not(
+        user.is_superuser or
+        (
+            user.is_staff_user() and
+            review.document.created_by == user
+        )
+    ):
+        return HttpResponseForbidden("Not authorized")
+
+    review.delete()
+    messages.success(request, "Review deleted successfully")
+
+    return redirect("manage_review")
+
+@login_required
+def manage_application(request):
+    user = request.user
+
+    if user.is_superuser:
+        applications = (DocumentApplication.objects.select_related(
+            "document", "applicant")
+                    .order_by("-requested_at")
+        )
+
+    elif user.is_staff_user:
+        applications = (
+            DocumentApplication.objects.select_related("document", "applicant")
+            .filter(document__created_by=user)
+            .order_by("-requested_at")
+        )
+    else:
+        return HttpResponseForbidden("Not authorized")
+
+    return render(request, "staff/manage_application.html", {"applications": applications})
+
+@login_required
+def delete_application(request, application_id):
+    application = get_object_or_404(
+        DocumentApplication,
+        id=application_id
+    )
+
+    application.delete()
+
+    messages.success(
+        request,
+        'Application deleted.'
+    )
+
+    return redirect('manage_application')
+

@@ -1,0 +1,287 @@
+{% extends 'main/base_staff.html' %}
+{% block title %}Manage Review{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-header{
+        background: linear-gradient(
+            135deg,
+            #1e3c72,
+            #2a5298
+        );
+
+        padding:25px;
+        border-radius:18px;
+        color:white;
+        margin-bottom:25px;
+
+        box-shadow:
+            0 8px 20px rgba(0,0,0,.08);
+    }
+
+    .page-header h2{
+        margin:0;
+        font-weight:700;
+    }
+
+    .review-card{
+        border:none;
+        border-radius:18px;
+        overflow:hidden;
+
+        box-shadow:
+            0 10px 30px rgba(0,0,0,.06);
+
+        transition:.25s;
+    }
+
+    .review-card:hover{
+        transform:translateY(-4px);
+    }
+
+    .user-avatar{
+        width:50px;
+        height:50px;
+
+        border-radius:50%;
+
+        background:#2a5298;
+        color:white;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        font-weight:700;
+        font-size:18px;
+    }
+
+    .review-message{
+        background:#f8f9fa;
+        padding:14px;
+        border-radius:12px;
+        margin-top:10px;
+    }
+
+    .reply-box{
+        background:#eef4ff;
+
+        border-left:
+            4px solid #2a5298;
+
+        padding:14px;
+        border-radius:10px;
+    }
+
+    textarea{
+        border-radius:12px !important;
+        resize:none;
+        padding:14px !important;
+    }
+
+    .save-btn{
+        background:#2563eb;
+        border:none;
+        border-radius:10px;
+        padding:8px 18px;
+    }
+
+    .delete-btn{
+        border-radius:10px;
+    }
+
+    .rating i{
+        color:#fbbf24;
+    }
+
+    .review-date{
+        font-size:.85rem;
+        color:gray;
+    }
+
+</style>
+
+
+<div class="container mt-3">
+
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center">
+
+        <div>
+            <h2>⭐ Manage Reviews</h2>
+
+            <small>
+                View and reply to student feedback
+            </small>
+        </div>
+
+
+        <a href="{% url 'staff_dashboard' %}"
+           class="btn btn-light">
+
+            <i class="bi bi-arrow-left"></i>
+            Back
+
+        </a>
+
+    </div>
+
+
+
+    {% if reviews %}
+
+        {% for review in reviews %}
+
+            <div class="card review-card mb-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div class="d-flex gap-3">
+
+                            <div class="user-avatar">
+                                {{ review.user.username|slice:":1"|upper }}
+                            </div>
+
+
+                            <div>
+
+                                <h5 class="mb-1">
+
+                                    <strong>
+                                        {{ review.user.username }}
+                                    </strong>
+
+                                    reviewed
+
+                                    <span class="text-primary">
+                                        "{{ review.document.title }}"
+                                    </span>
+
+                                </h5>
+
+
+                                <div class="rating">
+
+                                    {% for i in "12345"|make_list %}
+
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="bi bi-star-fill"></i>
+
+                                        {% else %}
+                                            <i class="bi bi-star"></i>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="review-date">
+                            {{ review.created_at|date:"M d, Y" }}
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="review-message">
+                        {{ review.message }}
+                    </div>
+
+
+
+                    {% if review.reply %}
+
+                        <div class="reply-box mt-3">
+
+                            <strong>
+
+                                <i class="bi bi-reply-fill"></i>
+
+                                Your Reply:
+
+                            </strong>
+
+                            <br>
+
+                            {{ review.reply }}
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <form method="post"
+                          action="{% url 'reply_review' review.id %}"
+                          class="mt-3">
+
+                        {% csrf_token %}
+
+
+                        <textarea
+                            name="reply"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Write a professional response...">
+
+                        </textarea>
+
+
+                        <div class="mt-3">
+
+                            <button type="submit"
+                                    class="btn save-btn text-white">
+
+                                <i class="bi bi-send"></i>
+                                Save Reply
+
+                            </button>
+
+
+                            <a href="{% url 'delete_review' review.id %}"
+                               class="btn btn-outline-danger delete-btn"
+
+                               onclick="
+                               return confirm(
+                               'Delete this review?'
+                               )">
+
+                                <i class="bi bi-trash"></i>
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+            No reviews found.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

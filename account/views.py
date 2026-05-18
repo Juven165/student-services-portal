@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
@@ -194,13 +195,15 @@ def dashboard(request):
     user = request.user
 
     if user.role == "admin":
+        messages.success(request, f"Welcome back Admin {user.username}")
         return render(request, "admin_dashboard.html")
 
-
     elif user.role == "staff":
+        messages.success(request, f"Welcome back {user.username}")
         return redirect("staff_dashboard")
 
     elif user.role == "student":
+        messages.success(request, f"Welcome back {user.username}")
         return redirect('student_dashboard')
 
     else:

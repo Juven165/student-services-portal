@@ -131,7 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
-LOGIN_REDIRECT_URL = '/staff/staff/staff-dashboard/'
+LOGIN_REDIRECT_URL = '/account/dashboard/'
 LOGOUT_REDIRECT_URL = '/account/login/'
 
 MEDIA_URL = '/media/'

@@ -1,0 +1,221 @@
+{% extends 'main/base_staff.html' %}
+
+{% block title %}Manage Applications{% endblock %}
+
+{% block content %}
+
+<style>
+
+.page-header{
+    text-align:center;
+    margin:20px 0 30px;
+}
+
+.page-header h2{
+    font-weight:700;
+    color:#0c49f0;
+}
+
+.table-card{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    overflow:hidden;
+}
+
+.table{
+    margin-bottom:0;
+}
+
+.table thead{
+    background:#1e3a8a;
+    color:white;
+}
+
+.table thead th{
+    padding:16px;
+    border:none;
+    font-size:15px;
+}
+
+.table tbody td{
+    padding:18px;
+    vertical-align:middle;
+}
+
+.table tbody tr{
+    transition:.2s;
+}
+
+.table tbody tr:hover{
+    background:#f8fafc;
+}
+
+.badge{
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:13px;
+}
+
+.action-btn{
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#fee2e2;
+    color:red;
+    transition:.2s;
+}
+
+.action-btn:hover{
+    background:red;
+    color:white;
+    transform:scale(1.1);
+}
+
+.username{
+    color:#2563eb;
+    font-weight:600;
+}
+
+.email{
+    color:gray;
+    font-size:14px;
+}
+
+</style>
+
+
+<div class="container">
+
+    <div class="page-header">
+        <h2>Manage Applications</h2>
+        <p class="text-muted">
+            View and manage submitted applications
+        </p>
+    </div>
+
+
+    <div class="table-card">
+
+        <table class="table align-middle text-center">
+
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Date Submitted</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+
+                {% for application in applications %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ application.full_name }}
+                        </strong>
+                    </td>
+
+
+                    <td class="username">
+                        {{ application.applicant.username }}
+                    </td>
+
+
+                    <td class="email">
+                        {{ application.email }}
+                    </td>
+
+
+                    <td>
+                        {{ application.requested_at|date:"M d, Y H:i" }}
+                    </td>
+
+
+                    <td>
+
+                        {% if application.status == "Approved" %}
+
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+
+                        {% elif application.status == "Pending" %}
+
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                        {% elif application.status == "Rejected" %}
+
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <form method="POST"
+                        action="{% url 'delete_application' application.id %}">
+
+                            {% csrf_token %}
+
+                            <button
+                            class="action-btn"
+                            onclick="return confirm('Delete this application?')">
+
+                                <i class="bi bi-trash"></i>
+
+                            </button>
+
+                        </form>
+
+                        </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6">
+
+                        <div class="py-5 text-muted">
+
+                            <i class="bi bi-inbox fs-1"></i>
+
+                            <p class="mt-2">
+                                No applications found
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

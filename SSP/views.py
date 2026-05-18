@@ -48,12 +48,14 @@ def add_document(request, document_id):
         'document': document
     })
 
-
 def document_detail(request, document_id):
     document = get_object_or_404(DocumentType, id=document_id)
 
     if not document.is_active and document.created_by != request.user:
-        messages.warning(request, 'You are not authorized to view this document!')
+        messages.warning(
+            request,
+            'You are not authorized to view this document!'
+        )
         return redirect('document_list')
 
     is_saved = False
@@ -64,12 +66,15 @@ def document_detail(request, document_id):
             document=document
         ).exists()
 
-    reviews = Review.objects.filter(document=document)
-    average_rating = reviews.aggregate(avg=Avg('rating'))['avg']
+    reviews = Review.objects.filter(
+        document=document
+    ).order_by('-created_at')
+
+    average_rating = reviews.aggregate(
+        avg=Avg('rating')
+    )['avg']
 
     existing_review = None
-    can_review = False
-    can_reply = False
 
     if request.user.is_authenticated:
         existing_review = Review.objects.filter(
@@ -77,34 +82,55 @@ def document_detail(request, document_id):
             user=request.user
         ).first()
 
-    # IMPORTANT: define form BEFORE POST
     form = ReviewForm()
 
     if request.method == "POST":
-        if existing_review:
-            messages.warning(request, 'You already reviewed this document!')
-        else:
-            form = ReviewForm(request.POST)
-            if form.is_valid():
-                review = form.save(commit=False)
-                review.document = document
-                review.user = request.user
-                review.save()
-                messages.success(request, "Thanks for feedback. Reviews submitted successfully")
-                return redirect("document_detail", document_id=document.id)
 
-    # ALWAYS available
+        if existing_review:
+            messages.warning(
+                request,
+                "You already reviewed this document."
+            )
+
+            return redirect(
+                "document_detail",
+                document_id=document.id
+            )
+
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+
+            review = form.save(commit=False)
+            review.document = document
+            review.user = request.user
+
+            review.save()
+
+            messages.success(
+                request,
+                "Review submitted successfully."
+            )
+
+            return redirect(
+                "document_detail",
+                document_id=document.id
+            )
+
     context = {
         'document': document,
-        'is_saved': is_saved,
         'reviews': reviews,
         'average_rating': average_rating,
-        'can_review': can_review,
-        'can_reply': can_reply,
+        'is_saved': is_saved,
         'form': form,
+        'existing_review': existing_review,   # ← idagdag ito
     }
 
-    return render(request, 'SSP/document_detail.html', context)
+    return render(
+        request,
+        'SSP/document_detail.html',
+        context
+    )
 
 @login_required
 def my_applications(request):
