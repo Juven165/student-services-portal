@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SSP{% endblock %}</title>
 
+    <link rel="icon" type="image/png" href="/media/img/student_logo.png">
+
     <!-- BOOTSTRAP 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -69,7 +71,7 @@
     <!-- TOPBAR -->
     <div class="topbar">
         <div class="brand d-flex align-items-center gap-2">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'document_list' %}">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'SSP:document_list' %}">
                 <i class="bi bi-mortarboard-fill fs-5" ></i>
                 <span>Student Portal</span>
             </a>
@@ -77,8 +79,84 @@
 
         <div class="right-section">
 
-            <a href="{% url 'my_applications' %}" class="top-link">My Document</a>
-            <a href="#" class="top-link">About</a>
+            <div class="dropdown">
+                <a href="#" class="position-relative text-decoration-none"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell-fill" style="font-size:26px; color:#facc15;"></i>
+                    {% if unread_notif > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              style="font-size:10px">
+                            {{ unread_notif }}
+                        </span>
+                    {% endif %}
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end p-0 shadow"
+                    style="width:320px; max-height:400px; overflow-y:auto; border-radius:12px;">
+
+                    <div class="d-flex justify-content-between align-item-center px-3 py-2"
+                        style="background:#0077ff; border-radius:12px 12px 0 0;">
+                        <span class="text-white fw-bold" style="font-size:14px;">
+                            🔔 Notifications
+                        </span>
+                        {% if unread_notif > 0 %}
+                        <form method="POST" action="{% url 'SSP:mark_all_as_read' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm text-warning p-0"
+                                style="font-size:11px; background:none; border:none">
+                                Mark all as read
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    {% for notif in notifications %}
+                    <div class="px-3 py-2 border-bottom {% if not notif.is_read %}bg-light{% endif %}"
+                         style="font-size:13px;">
+
+                         <div class="d-flex justify-content-between align-items-start">
+
+                            <div class="me-2">
+                                <div>{{ notif.message }}</div>
+                            </div>
+
+                            {% if not notif.is_read %}
+                                <span class="badge bg-warning text-dark rounded-pill">
+                                    New
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="d-flex justify-content-between align-item-center mt-1">
+                            <small class="text-muted">{{ notif.created_at|date:"M d, Y h:i A" }}</small>
+                            {% if not notif.is_read %}
+                            <form method="POST" action="{% url 'SSP:mark_as_read' notif.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn p-0 text-primary"
+                                        style="font-size:11px; background:none; border:none;">
+                                    Mark as read
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4" style="font-size:13px;">
+                        No notifications yet 🔕
+                    </div>
+                    {% endfor %}
+                    <div class="text-center py-2" style="border-radius:0 0 12px 12px; background:#f8f9fa;">
+                        <a href="{% url 'SSP:notification' %}" class="text-primary" style="font-size:12px;">
+                            View all notification
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'SSP:my_applications' %}" class="top-link">My Document</a>
+            <a href="{% url 'SSP:about' %}" class="top-link">About</a>
 
             <!-- USER DROPDOWN -->
             <div class="dropdown">
@@ -126,13 +204,13 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item py-2" href="{% url 'profile' %}">
+                        <a class="dropdown-item py-2" href="{% url 'SSP:profile' %}">
                             <i class="bi bi-person-circle me-2"></i> My Profile
                         </a>
                     </li>
 
                     <li>
-                        <a class="dropdown-item py-2" href="{% url 'save_document_list' %}">
+                        <a class="dropdown-item py-2" href="{% url 'SSP:save_document_list' %}">
                             <i class="bi bi-folder me-2"></i> Save Document
                         </a>
                     </li>

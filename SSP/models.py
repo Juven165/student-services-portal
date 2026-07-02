@@ -34,6 +34,7 @@ class DocumentApplication(models.Model):
 
     requested_at = models.DateTimeField(auto_now_add=True)
 
+
     def __str__(self):
         return f"{self.full_name} - {self.document.title} ({self.status})"
 
@@ -89,3 +90,12 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user.username} {self.document.title} {self.rating}"
 
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

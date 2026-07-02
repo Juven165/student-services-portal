@@ -3,8 +3,10 @@ from django.db.models import Q, Avg
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+
+from account.models import CustomUser
 from .forms import DocumentApplicationForm, ProfileForm, ReviewForm
-from .models import DocumentType, DocumentApplication, SaveDocument,  Profile, Review
+from .models import DocumentType, DocumentApplication, SaveDocument,  Profile, Review, Notification
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -33,19 +35,47 @@ def add_document(request, document_id):
 
     if request.method == "POST":
         form = DocumentApplicationForm(request.POST, request.FILES)
+
         if form.is_valid():
             application = form.save(commit=False)
             application.applicant = request.user
             application.document = document
             application.save()
-            messages.success(request, 'Your requested document was submitted successfully!')
-            return redirect('my_applications')
+
+            # ==========================
+            # Notify the staff who posted the document
+            # ==========================
+            Notification.objects.create(
+                recipient=document.created_by,
+                title="📄 New Document Request",
+                message=f"{request.user.get_full_name() or request.user.username} requested '{document.title}'."
+            )
+
+            # ==========================
+            # Notify all admins
+            # ==========================
+            admins = CustomUser.objects.filter(is_superuser=True)
+
+            for admin in admins:
+                Notification.objects.create(
+                    recipient=admin,
+                    title="📥 New Application",
+                    message=f"{request.user.get_full_name() or request.user.username} submitted a request for '{document.title}'"
+                )
+
+            messages.success(
+                request,
+                "Your requested document was submitted successfully!"
+            )
+
+            return redirect("SSP:my_applications")
+
     else:
         form = DocumentApplicationForm()
 
-    return render(request, 'SSP/add_document.html', {
-        'form': form,
-        'document': document
+    return render(request, "SSP/add_document.html", {
+        "form": form,
+        "document": document,
     })
 
 def document_detail(request, document_id):
@@ -56,7 +86,7 @@ def document_detail(request, document_id):
             request,
             'You are not authorized to view this document!'
         )
-        return redirect('document_list')
+        return redirect('SSP:document_list')
 
     is_saved = False
 
@@ -123,7 +153,7 @@ def document_detail(request, document_id):
         'average_rating': average_rating,
         'is_saved': is_saved,
         'form': form,
-        'existing_review': existing_review,   # ← idagdag ito
+        'existing_review': existing_review,
     }
 
     return render(
@@ -144,6 +174,9 @@ def save_document_list(request):
     documents = SaveDocument.objects.filter(user=request.user).order_by('-saved_at')
     return render(request, 'SSP/save_document_list.html', {'saved': documents})
 
+def about(request):
+    return render(request, 'SSP/about.html')
+
 @login_required
 def save_document(request, document_id):
     document = get_object_or_404(DocumentType, id=document_id)
@@ -154,14 +187,14 @@ def save_document(request, document_id):
         messages.success(request, f"{document.title} was saved successfully!")
     else:
         messages.warning(request, f"You already saved this document {document.title}")
-    return redirect('document_detail', document_id=document.id)
+    return redirect('SSP:document_detail', document_id=document.id)
 
 @login_required
 def unsave_document(request, document_id):
     document = get_object_or_404(DocumentType, id=document_id)
     SaveDocument.objects.filter(user=request.user, document=document).delete()
     messages.info(request, f"{document.title} was unsaved successfully!")
-    return redirect('save_document_list')
+    return redirect('SSP:save_document_list')
 
 def document_applications_detail(request, pk):
     document = get_object_or_404(DocumentType, pk=pk)
@@ -234,3 +267,30 @@ class StudentDashboard(LoginRequiredMixin, TemplateView):
 
 
         return context
+
+@login_required
+def notification(request):
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at")
+
+    unread_notif = notifications.filter(is_read=False).count()
+
+    return render(request, 'SSP/notification.html', {'notifications': notifications, 'unread_notif': unread_notif})
+
+@login_required
+def mark_as_read(request, notif_id):
+    if request.method == "POST":
+        notification = get_object_or_404(Notification, id=notif_id, recipient=request.user)
+        notification.is_read = True
+        notification.save()
+    return redirect('SSP:notification')
+
+@login_required
+def mark_all_as_read(request):
+    if request.method == "POST":
+        Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).update(is_read=True)
+    return redirect('SSP:notification')

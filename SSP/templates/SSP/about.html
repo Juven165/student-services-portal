@@ -1,0 +1,117 @@
+{% extends 'main/base_student.html' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-sm p-5 mb-5 text-center">
+        <h1 class="fw-bold text-primary">
+            School Services Portal
+        </h1>
+
+        <p class="lead text-muted mt-3">
+            A simple and efficient platform designed to help students request,
+            manage, and track school documents online.
+        </p>
+    </div>
+
+    <!-- About -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h3 class="fw-bold text-primary">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                About The System
+            </h3>
+
+            <p class="text-muted">
+                The School Services Portal (SSP) is a web-based application
+                developed to simplify document requests and student services.
+                It allows students to access important school documents,
+                submit requests online, and track their applications
+                conveniently from anywhere.
+            </p>
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="fw-bold text-success">
+                <i class="bi bi-bullseye me-2"></i>
+                Our Mission
+            </h3>
+
+            <p class="text-muted">
+                To provide students with a faster, more accessible,
+                and user-friendly way of requesting academic documents
+                while improving administrative efficiency.
+            </p>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="mb-5">
+        <h3 class="fw-bold text-center mb-4">
+            System Features
+        </h3>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <i class="bi bi-file-earmark-text fs-1 text-primary"></i>
+                    <h5 class="mt-3">Document Requests</h5>
+                    <p class="text-muted">
+                        Request school documents online with ease.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <i class="bi bi-clock-history fs-1 text-warning"></i>
+                    <h5 class="mt-3">Application Tracking</h5>
+                    <p class="text-muted">
+                        Monitor the status of your submitted requests.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <i class="bi bi-bookmark-check fs-1 text-success"></i>
+                    <h5 class="mt-3">Saved Documents</h5>
+                    <p class="text-muted">
+                        Save and manage frequently used documents.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="card border-0 shadow-sm p-5 text-center">
+        <h3 class="fw-bold mb-3">
+            Contact Information
+        </h3>
+
+        <p class="mb-2">
+            <i class="bi bi-envelope-fill text-primary me-2"></i>
+            support@ssp.edu
+        </p>
+
+        <p class="mb-2">
+            <i class="bi bi-telephone-fill text-success me-2"></i>
+            +63 900 000 0000
+        </p>
+
+        <p>
+            <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+            School Services Office
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}

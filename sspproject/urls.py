@@ -26,6 +26,7 @@ urlpatterns = [
     path('SSP/', include('SSP.urls')),
     path('account/', include('account.urls')),
     path('staff/', include('staff.urls')),
+    path('', include('adminpanel.urls'))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

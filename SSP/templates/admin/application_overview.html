@@ -1,0 +1,104 @@
+{% extends 'main/base_admin.html' %}
+
+{% block title %}Application Overview{% endblock %}
+
+{% block content %}
+<style>
+    .card-header {
+            background: linear-gradient(135deg, #4C84FF, #6CA8FF);
+            color: white;
+            border-radius: 18px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+    .card-header::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+    }
+
+    .table tbody tr {
+        transition: all .2s ease;
+    }
+
+    .table tbody tr:hover {
+        background: #f8faff;
+        transform: scale(1.002);
+    }
+    </style>
+
+<div class="container">
+    <div class="card-header shadow-sm">
+        <h3 class="fw-bold mb-1">Application Overview</h3>
+        <p>Review student application</p>
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-body p0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary text-uppercase small">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Fullname</th>
+                        <th>Documents</th>
+                        <th>Date Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="text-muted">{{ app.id }}</td>
+
+                        <td>{{ app.applicant.username }}</td>
+
+                        <td>{{ app.email }}</td>
+
+                        <td>{{ app.applicant.profile.full_name }}</td>
+
+                        <td>{{ app.document.title }}</td>
+
+                        <td>{{ app.requested_at|date:"M d, Y" }}</td>
+
+                        <td>
+                            {% if app.status == "Approved" %}
+                                <span class="badge bg-success">Approved</span>
+                            {% elif app.status == "Pending" %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{% url 'adminpanel:application_detail' app.id %}"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <a href="{% url 'adminpanel:delete_application' app.id %}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Are you sure you want to delete this application?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

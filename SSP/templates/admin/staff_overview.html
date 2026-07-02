@@ -1,0 +1,174 @@
+{% extends 'main/base_admin.html' %}
+
+{% block title %}Teacher Overview{% endblock %}
+
+{% block content %}
+
+    <style>
+        .card-header {
+            background: linear-gradient(135deg, #4C84FF, #6CA8FF);
+            color: white;
+            border-radius: 18px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+        }
+    </style>
+
+    <div class="card-header">
+        <h2>Staff Management</h2>
+        <a>Manage Staff Account</a>
+        <p class="text-white mb-2">
+            Total Staff: {{ staff.count }}
+        </p>
+    </div>
+
+    <div class="card border mt-2">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+
+                <div class="col-md-8">
+                    <label class="form-label small text-muted">
+                        Search Teacher
+                    </label>
+
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Search username, email, or name..."
+                           value="{{ search_query }}">
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <a href="{% url 'adminpanel:staff_overview' %}"
+                       class="btn btn-outline-secondary">
+                        Reset
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary text-uppercase small">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Staff</th>
+                        <th>Date Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in staff %}
+                    <tr>
+                        <td class="text-muted">{{ s.id }}</td>
+                        <td class="fw-semibold">{{ s.username }}
+                        <td>{{ s.email }}</td>
+                        <td>{{ s.profile.full_name }}</td>
+                        <td>{{ s.date_joined|date:"M d, Y"}}</td>
+                        <td>
+                            {% if s.is_active %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i>
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'adminpanel:staff_detail' s.id %}"
+                                class="btn btn-outline-info sm">
+                                View
+                            </a>
+
+                            <a href="{% url 'adminpanel:delete_staff' s.id %}"
+                                class="btn btn-outline-danger sm"
+                                onclick="return confirm('Are you sure you want to delete {{ s.username }}?')">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                No staff found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-3">
+        <nav aria-label="Page-navigation">
+            <ul class="pagination">
+
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page=1&search={{ search_query }}&status={{ status_filter }}">
+                            First
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                            Previous
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                            Next
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_obj.paginator.num_pages }}&search={{ search_query }}&status={{ status_filter }}">
+                            Last
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </nav>
+    </div>
+
+
+{% endblock %}

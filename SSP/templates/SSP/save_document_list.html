@@ -92,12 +92,12 @@
                     </small>
 
                     <div class="mt-auto d-grid gap-2">
-                        <a href="{% url 'document_detail' item.document.id %}"
+                        <a href="{% url 'SSP:document_detail' item.document.id %}"
                            class="btn btn-view">
                             👁 View
                         </a>
 
-                        <a href="{% url 'unsave_document' item.document.id %}"
+                        <a href="{% url 'SSP:unsave_document' item.document.id %}"
                            class="btn btn-remove">
                             ✖ Remove
                         </a>
@@ -109,8 +109,8 @@
     </div>
     {% else %}
         <div class="text-center text-muted py-5">
-            <h5>No saved documents yet 😅</h5>
-            <a href="{% url 'document_list' %}" class="btn btn-primary mt-3">
+            <h5>No saved documents yet</h5>
+            <a href="{% url 'SSP:document_list' %}" class="btn btn-primary mt-3">
                 Browse Documents
             </a>
         </div>

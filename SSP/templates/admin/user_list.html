@@ -1,0 +1,150 @@
+{% extends 'main/base_admin.html' %}
+
+{% block title %}User List{% endblock %}
+
+{% block content %}
+
+<style>
+    .header {
+        background: linear-gradient(135deg, #4C84FF, #6CA8FF);
+        color: white;
+        border-radius: 18px;
+        padding: 35px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 50%;
+    }
+</style>
+
+<div class="container">
+    <div class="header shadow-sm">
+        <h3 class="fw-bold mb-1">👥User Management</h3>
+        <p>Manage admin, staff & student account</p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card border-0 mb-2">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+
+                <div class="col-md-6">
+                    <label class="form-label small text-muted">Search</label>
+                    <input type="text"
+                           name="q"
+                           class="form-control"
+                           placeholder="Search username or email..."
+                           value="{{ request.GET.q }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Role</label>
+                    <select name="role" class="form-select">
+                        <option value="">All Roles</option>
+                        <option value="admin" {% if request.GET.role == "admin" %}selected{% endif %}>Admin</option>
+                        <option value="staff" {% if request.GET.role == "staff" %}selected{% endif %}>Staff</option>
+                        <option value="student" {% if request.GET.role == "student" %}selected{% endif %}>Student</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel me-2"></i>Filter
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 mt-2">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-o">
+                <thead class="table-primary text-uppercase small">
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Fullname</th>
+                        <th>Joined</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">{{ user.username }}</div>
+                                <small class="text-muted">ID: {{ user.id }}</small>
+                            </td>
+
+                            <td>{{ user.email }}</td>
+
+                            <td>{{ user.profile.full_name }}</td>
+
+                            <td>
+                                <small>{{ user.date_joined|date:"M d, Y" }}</small>
+                            </td>
+
+                            <td>
+                                {% if user.is_superuser %}
+                                    <span class="badge bg-danger">Admin</span>
+                                {% elif user.is_staff_user%}
+                                    <span class="badge bg-info">Staff</span>
+                                {% elif user.is_student%}
+                                    <span class="badge bg-success">Student</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Inactive</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if not user.is_superuser %}
+
+                                    {% if user.is_active %}
+                                        <a href="{% url 'adminpanel:deactivate' user.id %}"
+                                           class="btn btn-sm btn-outline-warning">
+                                            Deactivate
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'adminpanel:activate' user.id %}"
+                                           class="btn btn-sm btn-outline-success">
+                                            Activate
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="{% url 'adminpanel:delete_user' user.id %}"
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Delete {{ user.username }}?')">
+                                        Delete
+                                    </a>
+
+                                {% else %}
+                                    <span class="badge bg-secondary">Protected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DocumentForm
 from django.views import View
-from SSP.models import Review
+from SSP.models import Review, Notification
 
 class StaffDashboard(LoginRequiredMixin, TemplateView):
     template_name = 'account/staff_dashboard.html'
@@ -134,8 +134,33 @@ class UpdateApplicationStatus(LoginRequiredMixin, View):
         status = request.POST.get("status")
 
         if status in ["Pending", "Approved", "Rejected"]:
-            application.status = status
-            application.save()
+
+            # Iwas duplicate notification
+            if application.status != status:
+
+                application.status = status
+                application.save()
+
+                if status == "Approved":
+                    Notification.objects.create(
+                        recipient=application.applicant,
+                        title="✅ Application Approved",
+                        message=f"Your request for '{application.document.title}' has been approved."
+                    )
+
+                elif status == "Rejected":
+                    Notification.objects.create(
+                        recipient=application.applicant,
+                        title="❌ Application Rejected",
+                        message=f"Your request for '{application.document.title}' has been rejected."
+                    )
+
+                elif status == "Pending":
+                    Notification.objects.create(
+                        recipient=application.applicant,
+                        title="⏳ Application Pending",
+                        message=f"Your request for '{application.document.title}' is under review."
+                    )
 
         return redirect(request.META.get("HTTP_REFERER"))
 
@@ -248,3 +273,29 @@ def delete_application(request, application_id):
 
     return redirect('manage_application')
 
+@login_required
+def notification(request):
+    notifications = Notification.objects.filter(
+        recipient=request.user
+    ).order_by("-created_at")
+
+    unread_notif = notifications.filter(is_read=False).count()
+
+    return render(request, 'staff/notification.html', {'notifications': notifications, 'unread_notif': unread_notif})
+
+@login_required
+def mark_as_read(request, notif_id):
+    if request.method == "POST":
+        notification = get_object_or_404(Notification, id=notif_id, recipient=request.user)
+        notification.is_read = True
+        notification.save()
+    return redirect('staff:notification')
+
+@login_required
+def mark_all_as_read(request):
+    if request.method == "POST":
+        Notification.objects.filter(
+            recipient=request.user,
+            is_read=False
+        ).update(is_read=True)
+    return redirect('staff:notification')

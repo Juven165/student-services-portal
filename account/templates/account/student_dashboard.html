@@ -111,11 +111,17 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <strong>{{ app.document.title }}</strong>
-                                    <span class="badge bg-info ms-2">{{ app.status }}</span>
+                                    {% if app.status == 'Approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif app.status == 'Pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif app.status == 'Rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
                                     <p class="text-muted mb-0 small">You requested this document</p>
                                 </div>
                                 <small class="text-muted">
-                                    {{ app.date|date:"M d, Y H:i" }}
+                                    {{ app.date|date:"M d, Y h:i A" }}
                                 </small>
                             </div>
 
@@ -126,7 +132,7 @@
                                     <p class="text-muted mb-0 small">You saved this document</p>
                                 </div>
                                 <small class="text-muted">
-                                    {{ app.date|date:"M d, Y H:i" }}
+                                    {{ app.date|date:"M d, Y h:i A" }}
                                 </small>
                             </div>
                         {% endif %}
@@ -164,7 +170,7 @@
                                     {{ document.description|truncatewords:15 }}
                                 </p>
 
-                                <a href="{% url 'document_detail' document.id %}"
+                                <a href="{% url 'SSP:document_detail' document.id %}"
                                    class="btn btn-outline-primary rounded-pill mt-3">
                                     View Document
                                 </a>

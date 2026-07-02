@@ -86,6 +86,19 @@
         border:none;
         border-radius:10px;
         padding:8px 18px;
+        color:white;
+    }
+
+    .save-btn:hover{
+        background:#1d4ed8;
+        color:white;
+    }
+
+    .save-btn:focus,
+    .save-btn:active{
+        background:#1d4ed8 !important;
+        color:white !important;
+        box-shadow:none !important;
     }
 
     .delete-btn{
@@ -118,7 +131,7 @@
         </div>
 
 
-        <a href="{% url 'staff_dashboard' %}"
+        <a href="{% url 'staff:staff_dashboard' %}"
            class="btn btn-light">
 
             <i class="bi bi-arrow-left"></i>
@@ -222,7 +235,7 @@
 
 
                     <form method="post"
-                          action="{% url 'reply_review' review.id %}"
+                          action="{% url 'staff:reply_review' review.id %}"
                           class="mt-3">
 
                         {% csrf_token %}
@@ -248,7 +261,7 @@
                             </button>
 
 
-                            <a href="{% url 'delete_review' review.id %}"
+                            <a href="{% url 'staff:delete_review' review.id %}"
                                class="btn btn-outline-danger delete-btn"
 
                                onclick="

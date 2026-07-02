@@ -13,7 +13,7 @@
             <span class="text-primary">{{ document.title }}</span>
         </h2>
 
-        <a href="{% url 'staff_dashboard' %}" class="btn btn-danger">
+        <a href="{% url 'staff:staff_dashboard' %}" class="btn btn-danger">
             <i class="bi bi-arrow-left"></i>Back to Dashboard
         </a>
     </div>
@@ -103,7 +103,7 @@
                             {{ doc.status }}
                         </span>
 
-                        <form method="POST" action="{% url 'update_application_status' doc.id %}">
+                        <form method="POST" action="{% url 'staff:update_application_status' doc.id %}">
                         {% csrf_token %}
 
                             <select name="status"

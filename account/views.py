@@ -194,17 +194,20 @@ def password_reset(request, uidb64, token):
 def dashboard(request):
     user = request.user
 
+    print(user.role)
+
     if user.role == "admin":
         messages.success(request, f"Welcome back Admin {user.username}")
-        return render(request, "admin_dashboard.html")
+        return redirect('adminpanel:admin_dashboard')
+
 
     elif user.role == "staff":
         messages.success(request, f"Welcome back {user.username}")
-        return redirect("staff_dashboard")
+        return redirect("staff:staff_dashboard")
 
     elif user.role == "student":
         messages.success(request, f"Welcome back {user.username}")
-        return redirect('student_dashboard')
+        return redirect('SSP:student_dashboard')
 
     else:
         messages.error(request, "Invalid role or not registered account.")

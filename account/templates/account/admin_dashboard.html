@@ -1,10 +1,300 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin</title>
-</head>
-<body>
+{% extends 'main/base_admin.html' %}
 
-</body>
-</html>
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .hero-header {
+        background: linear-gradient(135deg, #4C84FF, #6CA8FF);
+        color: white;
+        border-radius: 18px;
+        padding: 35px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-header::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 50%;
+    }
+
+    .hero-header h2 {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .hero-header p {
+        margin-bottom: 0;
+        color: rgba(255,255,255,0.9);
+        font-size: 15px;
+    }
+
+    .stat-card {
+        border-radius: 16px;
+        padding: 22px;
+        color: white;
+        transitions: .25s;
+    }
+
+    .stat-card .bi {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .stat-card h3 {
+        font-weight: 700;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .chart-card {
+        border-radius: 18px;
+    }
+
+    .chart-card canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .chart-card {
+        border-radius: 18px;
+        background: #fff;
+}
+
+</style>
+
+<div class="container-fluid pt-0 pb-4 px-1">
+
+    <div class="hero-header">
+
+        <h2>
+            Welcome back, Admin "{{ user.username }}"!
+        </h2>
+
+        <p>
+            Manage users, staff, applications, and system records.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#4F8CFF">
+            <i class="bi bi-people-fill"></i>
+            <div class="mt-2">Total Student</div>
+            <h3>{{ total_students|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#7C4DFF">
+            <i class="bi bi-mortarboard"></i>
+            <div class="mt-2">Total Teacher</div>
+            <h3>{{ total_staff|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#00B894">
+            <i class="bi bi-app-indicator"></i>
+            <div class="mt-2">Applications</div>
+            <h3>{{ total_applications|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#00BCD4">
+            <i class="bi bi-file-earmark-post"></i>
+            <div class="mt-2">Documents</div>
+            <h3>{{ total_documents|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#F4B400">
+            <i class="bi bi-hourglass-split"></i>
+            <div class="mt-2">Pending</div>
+            <h3>{{ pending_count|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#34A853">
+            <i class="bi bi-check-square-fill"></i>
+            <div class="mt-2">Approved</div>
+            <h3>{{ approved_count|default:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card shadow-sm text-center" style="background:#EA4335">
+            <i class="bi bi-x-square-fill"></i>
+            <div class="mt-2">Rejected</div>
+            <h3>{{ rejected_count|default:0 }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- =======================
+       CHARTS & INSIGHTS
+  ======================== -->
+<div class="row g-4 mb-5">
+
+    <!-- PIE CHART -->
+    <div class="col-lg-5">
+        <div class="card chart-card shadow-sm border-0 p-4 h-100">
+            <h5 class="mb-4">
+                <i class="bi bi-pie-chart-fill me-2 text-primary"></i>
+                Pending, Approved, and Rejected
+            </h5>
+
+            <div style="height: 350px;">
+                <canvas id="statusPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="col-lg-7">
+        <div class="card chart-card shadow-sm border-0 p-4 h-100">
+            <h5 class="mb-4">
+                <i class="bi bi-bar-chart-fill me-2 text-primary"></i>
+                Most Requested Documents
+            </h5>
+
+            <div style="height: 350px;">
+                <canvas id="documentBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-3 mb-5">
+    <div class="col-lg-10 mx-auto">
+        <div class="card shadow-sm border-0 p-4">
+
+            <h5 class="mb-4">
+                <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
+                Applications Overtime
+            </h5>
+
+            <select id="timeframeSelect" class="form-select w-auto">
+                <option value="7" {% if request.GET.timeframe == "7" or not request.GET.timeframe %}selected{% endif %}>
+                    Last 7 Days
+                </option>
+
+                <option value="30" {% if request.GET.timeframe == "30" %}selected{% endif %}>
+                    Last 30 Days
+                </option>
+
+                <option value="all" {% if request.GET.timeframe == "all" %}selected{% endif %}>
+                    All Time
+                </option>
+            </select>
+
+            <div style="height: 400px;">
+                <canvas id="applicationLineChart"></canvas>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // PIE CHART
+    new Chart(document.getElementById('statusPieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Approved', 'Rejected'],
+            datasets: [{
+                data: [{{ pending_count }}, {{ approved_count }}, {{ rejected_count }}],
+                backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
+                borderWidth: 2
+            }]
+        }
+    });
+
+    // BAR CHART
+    new Chart(document.getElementById('documentBarChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ document_titles|safe }},
+            datasets: [{
+                label: 'Documents',
+                data: {{ documents_counts|safe }},
+                backgroundColor: '#4F8CFF',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    document.getElementById('timeframeSelect')
+        .addEventListener('change', function() {
+
+            let timeframe = this.value;
+
+            fetch("{% url 'adminpanel:application_overtime' %}?timeframe=" + timeframe)
+                .then(response => response.json())
+                .then(data => {
+
+                    applicationChart.data.labels = data.dates;
+                    applicationChart.data.datasets[0].data =
+                        data.application_count;
+
+                    applicationChart.update();
+                });
+        });
+
+    const applicationChart = new Chart(
+        document.getElementById('applicationLineChart'),
+    {
+        type: 'line',
+        data: {
+            labels: {{ dates|safe }},
+            datasets: [{
+                label: 'Applications Per Day',
+                data: {{ application_count|safe }},
+                borderColor: '#4F8CFF',
+                backgroundColor: 'rgba(79,140,255,.15)',
+                fill: true,
+                tension: .4
+            }]
+        },   // <-- COMMA DITO
+
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

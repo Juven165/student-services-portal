@@ -1,0 +1,193 @@
+{% extends 'main/base_admin.html' %}
+{% load tz %}
+{% block title %}Staff Information{% endblock %}
+
+{% block content %}
+<style>
+    .card-header {
+        background: linear-gradient(135deg, #4C84FF, #6CA8FF);
+        color: white;
+        border-radius: 18px;
+        padding: 35px;
+        position: relative;
+        overflow: hidden
+    }
+
+    .card-header::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 180px;
+        height: 180px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 50%;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="card-header">
+        <div class="d-flex align-items-center">
+            <img src="{{ staff.profile.prof_picture.url }}"
+                 class="rounded-circle me-3"
+                 width="70"
+                 height="70">
+
+            <div>
+                <p>
+                    <i class="bi bi-person-fill me-2 text-white"></i>
+                    {{ staff.profile.full_name }}
+                </p>
+
+                <p>
+                    <i class="bi bi-envelope-fill me-2 text-white"></i>
+                    {{ staff.email }}
+                </p>
+
+                <p>
+                    <i class="bi bi-calendar-event me-2 text-white"></i>
+                    {{ staff.date_joined|date:"M d, Y" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 mt-2">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-white text-center" style="background:#3BB273;">
+                    <i class="bi bi-file-earmark-text fs-1 text-primary"></i>
+                    <h5 class="mt-2">Total Documents</h5>
+                    <h2>{{ documents_count }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-white text-center" style="background:#DC3545;">
+                    <i class="bi bi-journal-check fs-1 text-success"></i>
+                    <h5 class="mt-2">Applications</h5>
+                    <h2>{{ applications_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Staff Information</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Full Name:</strong> {{ staff.profile.full_name }}</p>
+                    <p><strong>Email:</strong> {{ staff.email }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <p><strong>Joined:</strong> {{ staff.date_joined|date:"M d, Y" }}</p>
+
+                    {% if staff.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Documents Posted
+            </h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Document</th>
+                        <th>Date Created</th>
+                        <th>Applications</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for document in documents %}
+                    <tr>
+                        <td>
+                            <strong>{{ document.title }}</strong>
+                        </td>
+
+                        <td>
+                            {{ document.created_at|date:"M d, Y" }}
+                        </td>
+
+                        <td>
+                            <span class="badge bg-primary">
+                                {{ document.document_applications.count }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            No documents posted.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header text-white fw-semibold">
+            <h5>
+                <i class="bi bi-window me-2"></i>
+                Applications
+                <span class="badge bg-light text-primary">
+                    {{ applications_count }}
+                </span>
+            </h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for app in applications %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ app.applicant.username }}</strong>
+                        <span class="text-muted">applied for</span>
+                        <em>{{ app.document.title }}</em>
+
+                        <br>
+
+                        <small class="text-muted">
+                            {{ app.requested_at|date:"M d, Y h:i A" }}
+                        </small>
+                    </div>
+
+                    <div>
+                        {% if app.status == "Approved" %}
+                            <span class="badge bg-success">Approved</span>
+                        {% elif app.status == "Pending" %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% elif app.status == "Rejected" %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </div>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted text-center">
+                    No applications yet.
+                </li>
+
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

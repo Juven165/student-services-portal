@@ -26,16 +26,16 @@
 
     <div class="d-flex gap-2 mt-3">
         {% if is_saved %}
-            <a href="{% url 'unsave_document' document.id %}" class="btn btn-danger">
+            <a href="{% url 'SSP:unsave_document' document.id %}" class="btn btn-danger">
                 <i class="bi bi-heartbreak"></i> Unsave
             </a>
         {% else %}
-            <a href="{% url 'save_document' document.id %}" class="btn btn-outline-primary">
+            <a href="{% url 'SSP:save_document' document.id %}" class="btn btn-outline-primary">
                 <i class="bi bi-heart"></i> Save
             </a>
         {% endif %}
 
-        <a href="{% url 'request_document' document.id %}" class="btn btn-success">
+        <a href="{% url 'SSP:request_document' document.id %}" class="btn btn-success">
             📄 Request Now
         </a>
     </div>

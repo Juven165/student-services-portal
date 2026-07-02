@@ -140,7 +140,7 @@
 
 
                     <td>
-                        {{ application.requested_at|date:"M d, Y H:i" }}
+                        {{ application.requested_at|date:"M d, Y h:i A" }}
                     </td>
 
 
@@ -172,7 +172,7 @@
                     <td>
 
                         <form method="POST"
-                        action="{% url 'delete_application' application.id %}">
+                        action="{% url 'staff:delete_application' application.id %}">
 
                             {% csrf_token %}
 
