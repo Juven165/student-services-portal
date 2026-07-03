@@ -112,14 +112,14 @@ Students can browse available documents, submit document requests, track applica
 ![Homepage](screenshot/st3.png)
 ![Homepage](screenshot/st4.png)
 
-## Staff
+## Staff dashboard
 ![Homepage](screenshot/st.png)
 ![Homepage](screenshot/st1.png)
 ![Homepage](screenshot/st2.png)
 ![Homepage](screenshot/st3.png)
 ![Homepage](screenshot/st4.png)
 
-## Admin
+## Admin dashboard
 ![Homepage](screenshot/adm.png)
 ![Homepage](screenshot/adm1.png)
 ![Homepage](screenshot/adm2.png)
