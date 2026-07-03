@@ -104,6 +104,28 @@ Students can browse available documents, submit document requests, track applica
 
 ---
 
+## 📸 Screenshots
+## Student/Course listing
+![Homepage](Screenshots/st.png)
+![Homepage](Screenshots/st1.png)
+![Homepage](Screenshots/st2.png)
+![Homepage](Screenshots/st3.png)
+![Homepage](Screenshots/st4.png)
+
+## Staff
+![Homepage](Screenshots/st.png)
+![Homepage](Screenshots/st1.png)
+![Homepage](Screenshots/st2.png)
+![Homepage](Screenshots/st3.png)
+![Homepage](Screenshots/st4.png)
+
+## Admin
+![Homepage](Screenshots/adm.png)
+![Homepage](Screenshots/adm1.png)
+![Homepage](Screenshots/adm2.png)
+
+---
+
 ## 👨‍💻 Developed By
 
 **Juven T. Pinoy**
